@@ -61,11 +61,33 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     }
 
     @Override
+    public void unlink(int originId, int destId, K label) throws IllegalArgumentException {
+        Moore_NFA_State<K, V> origin = nfaBuild.get(originId);
+        if (origin == null) throw new IllegalArgumentException("Invalid originId");
+        Moore_NFA_State<K, V> dest = origin.next.get(label);
+        if (dest == null) throw new IllegalArgumentException("Invalid label");
+        if (dest.id != destId) throw new IllegalArgumentException("Invalid destId");
+        origin.next.remove(label);
+    }
+
+    @Override
     public void add(int id, V value) throws IllegalArgumentException {
         if (nfaBuild.containsKey(id)) {
             throw new IllegalArgumentException("ID already defined");
         }
         nfaBuild.put(id, new Moore_NFA_State<>(id, value));
+    }
+
+    /**
+     * Warning: this operation is very expensive in this implementation
+     */
+    @Override
+    public void remove(int id) throws IllegalArgumentException {
+        Moore_NFA_State<K, V> origin = nfaBuild.remove(id);
+        if (origin == null) throw new IllegalArgumentException("Invalid id");
+        for (Moore_NFA_State<K, V> stat : nfaBuild.values()) {
+            stat.next.values().removeIf(node -> node.id == id);
+        }
     }
 
     private static class Moore_NFA_State<K, V> implements State<K, V> {
