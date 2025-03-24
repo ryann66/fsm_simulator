@@ -1,7 +1,5 @@
 package fsm;
 
-import keychain.Keychain;
-
 import java.util.*;
 
 public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
@@ -19,13 +17,24 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     }
 
     @Override
-    public Set<State<K, V>> step() {
-        // todo: implement
+    public Set<? extends State<K, V>> step() {
+        Set<Moore_NFA_State<K, V>> newStates = new HashSet<>();
+        for (Moore_NFA_State<K, V> mnfas : currentStates) {
+            newStates.addAll(mnfas.next.values());
+        }
+        currentStates = newStates;
+        return currentStates;
     }
 
     @Override
-    public Set<State<K, V>> step(K input) {
-        // todo: implement
+    public Set<? extends State<K, V>> step(K input) {
+        Set<Moore_NFA_State<K, V>> newStates = new HashSet<>();
+        for (Moore_NFA_State<K, V> mnfas : currentStates) {
+            if (mnfas.next.containsKey(input))
+                newStates.add(mnfas.next.get(input));
+        }
+        currentStates = newStates;
+        return currentStates;
     }
 
     @Override
@@ -50,20 +59,14 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     }
 
     private static class Moore_NFA_State<K, V> implements State<K, V> {
-        final Keychain<K> chain;
         final int id;
         final V value;
-        final Map<K, V> next;
+        final Map<K, Moore_NFA_State<K, V>> next;
 
         private Moore_NFA_State(int id, V value) {
-            this(id, value, null, null);
-        }
-
-        private Moore_NFA_State(int id, V value, K key, Moore_NFA_State<K, V> parent) {
             this.id = id;
             this.value = value;
             this.next = new HashMap<>();
-            this.chain = Keychain.add(parent == null ? null : parent.chain, key);
         }
 
         @Override
@@ -74,11 +77,6 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         @Override
         public int id() {
             return id;
-        }
-
-        @Override
-        public Iterator<K> iterator() {
-            return chain.iterator();
         }
     }
 }

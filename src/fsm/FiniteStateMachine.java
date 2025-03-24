@@ -16,7 +16,7 @@ public interface FiniteStateMachine<K, V> {
      * Takes one step from every current state
      * @return all states that are one step downstream of the current states
      */
-    Set<State<K, V>> step();
+    Set<? extends State<K, V>> step();
 
     /**
      * Takes one step from the current states along any edge that is equal
@@ -25,7 +25,7 @@ public interface FiniteStateMachine<K, V> {
      * @return all states that are one step downstream along an edge labelled with input
      *         from the current states
      */
-    Set<State<K, V>> step(K input);
+    Set<? extends State<K, V>> step(K input);
 
     /**
      * Returns true iff there are no active states
@@ -43,7 +43,7 @@ public interface FiniteStateMachine<K, V> {
      * @param <K> the input type
      * @param <V> the output type
      */
-    interface State<K, V> extends Iterable<K> {
+    interface State<K, V> {
         /**
          * Returns the output value of this state
          * @return the output value of this state
@@ -55,11 +55,5 @@ public interface FiniteStateMachine<K, V> {
          * @return the ID that this state was constructed with
          */
         int id();
-
-        /**
-         * Returns an iterator over the keys used to reach this state
-         * @return an iterator over the keys used to reach this state
-         */
-        Iterator<K> iterator();
     }
 }
