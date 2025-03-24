@@ -50,12 +50,22 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
 
     @Override
     public void link(int originId, int destId, K label) throws IllegalArgumentException {
-        // todo: implement
+        if (!nfaBuild.containsKey(originId) || !nfaBuild.containsKey(destId)) {
+            throw new IllegalArgumentException("Using invalid node id");
+        }
+        Moore_NFA_State<K, V> origin = nfaBuild.get(originId);
+        if (origin.next.containsKey(label)) {
+            throw new IllegalArgumentException("Edge already defined");
+        }
+        origin.next.put(label, nfaBuild.get(destId));
     }
 
     @Override
     public void add(int id, V value) throws IllegalArgumentException {
-        // todo: implement
+        if (nfaBuild.containsKey(id)) {
+            throw new IllegalArgumentException("ID already defined");
+        }
+        nfaBuild.put(id, new Moore_NFA_State<>(id, value));
     }
 
     private static class Moore_NFA_State<K, V> implements State<K, V> {
