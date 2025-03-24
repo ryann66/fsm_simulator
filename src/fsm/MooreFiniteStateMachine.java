@@ -33,7 +33,7 @@ public interface MooreFiniteStateMachine<K, V> extends FiniteStateMachine<K, V> 
 
     /**
      * Removes the node from the FSM
-     * @param id the node to remove
+     * @param id the id of the node to remove
      * @throws IllegalArgumentException if the node does not exist
      */
     void remove(int id) throws IllegalArgumentException;
