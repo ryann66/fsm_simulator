@@ -1,5 +1,7 @@
 package fsm;
 
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.Set;
 
 /**
@@ -14,7 +16,7 @@ public interface FiniteStateMachine<K, V> {
      * Takes one step from every current state
      * @return all states that are one step downstream of the current states
      */
-    Set<State<V>> step();
+    Set<State<K, V>> step();
 
     /**
      * Takes one step from the current states along any edge that is equal
@@ -23,7 +25,7 @@ public interface FiniteStateMachine<K, V> {
      * @return all states that are one step downstream along an edge labelled with input
      *         from the current states
      */
-    Set<State<V>> step(K input);
+    Set<State<K, V>> step(K input);
 
     /**
      * Returns true iff there are no active states
@@ -38,9 +40,10 @@ public interface FiniteStateMachine<K, V> {
 
     /**
      * Wrapper state class to be returned by methods
-     * @param <V>
+     * @param <K> the input type
+     * @param <V> the output type
      */
-    interface State<V> {
+    interface State<K, V> extends Iterable<K> {
         /**
          * Returns the output value of this state
          * @return the output value of this state
@@ -52,5 +55,11 @@ public interface FiniteStateMachine<K, V> {
          * @return the ID that this state was constructed with
          */
         int id();
+
+        /**
+         * Returns an iterator over the keys used to reach this state
+         * @return an iterator over the keys used to reach this state
+         */
+        Iterator<K> iterator();
     }
 }

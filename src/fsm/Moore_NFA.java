@@ -1,14 +1,13 @@
 package fsm;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import keychain.Keychain;
+
+import java.util.*;
 
 public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     final Map<Integer, Moore_NFA_State<K, V>> nfaBuild;
 
-    final Set<Moore_NFA_State<K, V>> currentStates;
+    Set<Moore_NFA_State<K, V>> currentStates;
     final Moore_NFA_State<K, V> origin;
 
     public Moore_NFA(int id, V value) {
@@ -20,12 +19,12 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     }
 
     @Override
-    public Set<State<V>> step() {
+    public Set<State<K, V>> step() {
         // todo: implement
     }
 
     @Override
-    public Set<State<V>> step(K input) {
+    public Set<State<K, V>> step(K input) {
         // todo: implement
     }
 
@@ -50,16 +49,21 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         // todo: implement
     }
 
-
-    private static class Moore_NFA_State<K, V> implements State<V> {
+    private static class Moore_NFA_State<K, V> implements State<K, V> {
+        final Keychain<K> chain;
         final int id;
         final V value;
         final Map<K, V> next;
 
         private Moore_NFA_State(int id, V value) {
+            this(id, value, null, null);
+        }
+
+        private Moore_NFA_State(int id, V value, K key, Moore_NFA_State<K, V> parent) {
             this.id = id;
             this.value = value;
             this.next = new HashMap<>();
+            this.chain = Keychain.add(parent == null ? null : parent.chain, key);
         }
 
         @Override
@@ -70,6 +74,11 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         @Override
         public int id() {
             return id;
+        }
+
+        @Override
+        public Iterator<K> iterator() {
+            return chain.iterator();
         }
     }
 }
