@@ -1,7 +1,6 @@
 package fsm;
 
 import java.util.Iterator;
-import java.util.Queue;
 import java.util.Set;
 
 /**

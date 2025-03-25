@@ -2,6 +2,7 @@ package keychain;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 /**
@@ -58,4 +59,12 @@ public class Keychain<K> implements Iterable<K> {
         return collect().iterator();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj instanceof Keychain<?> key) {
+            return Objects.equals(this.value, key.value) && Objects.equals(this.past, key.past);
+        }
+        return false;
+    }
 }

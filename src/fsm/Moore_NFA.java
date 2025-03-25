@@ -143,5 +143,19 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         public Iterator<K> iterator() {
             return keys.iterator();
         }
+
+        /**
+         * This implementation of equals only checks id equality
+         * This means that duplicate states are pruned, though it may result in only
+         * one possible keypath being shown to the user (even if multiple are possible)
+         */
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj instanceof Moore_NFA.Moore_NFA_State<?,?> stat) {
+                return this.id == stat.id;
+            }
+            return false;
+        }
     }
 }
