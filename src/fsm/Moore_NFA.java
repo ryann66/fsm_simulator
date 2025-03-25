@@ -1,26 +1,30 @@
 package fsm;
 
+import keychain.Keychain;
+
 import java.util.*;
 
 public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
-    final Map<Integer, Moore_NFA_State<K, V>> nfaBuild;
+    final Map<Integer, Moore_NFA_Node<K, V>> nfaBuild;
 
     Set<Moore_NFA_State<K, V>> currentStates;
-    final Moore_NFA_State<K, V> origin;
+    final Moore_NFA_Node<K, V> origin;
 
     public Moore_NFA(int id, V value) {
         nfaBuild = new HashMap<>();
         currentStates = new HashSet<>();
-        origin = new Moore_NFA_State<>(id, value);
+        origin = new Moore_NFA_Node<>(id, value);
         nfaBuild.put(id, origin);
-        currentStates.add(origin);
+        reset();
     }
 
     @Override
     public Set<? extends State<K, V>> step() {
         Set<Moore_NFA_State<K, V>> newStates = new HashSet<>();
         for (Moore_NFA_State<K, V> mnfas : currentStates) {
-            newStates.addAll(mnfas.next.values());
+            for (Map.Entry<K, Moore_NFA_Node<K, V>> ent : nfaBuild.get(mnfas.id).next.entrySet()) {
+                newStates.add(new Moore_NFA_State<>(ent.getValue(), mnfas, ent.getKey()));
+            }
         }
         currentStates = newStates;
         return currentStates;
@@ -30,8 +34,10 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     public Set<? extends State<K, V>> step(K input) {
         Set<Moore_NFA_State<K, V>> newStates = new HashSet<>();
         for (Moore_NFA_State<K, V> mnfas : currentStates) {
-            if (mnfas.next.containsKey(input))
-                newStates.add(mnfas.next.get(input));
+            Moore_NFA_Node<K, V> node = nfaBuild.get(mnfas.id).next.get(input);
+            if (node != null) {
+                newStates.add(new Moore_NFA_State<>(node, mnfas, input));
+            }
         }
         currentStates = newStates;
         return currentStates;
@@ -45,7 +51,7 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     @Override
     public void reset() {
         currentStates.clear();
-        currentStates.add(origin);
+        currentStates.add(new Moore_NFA_State<>(origin));
     }
 
     @Override
@@ -53,7 +59,7 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         if (!nfaBuild.containsKey(originId) || !nfaBuild.containsKey(destId)) {
             throw new IllegalArgumentException("Using invalid node id");
         }
-        Moore_NFA_State<K, V> origin = nfaBuild.get(originId);
+        Moore_NFA_Node<K, V> origin = nfaBuild.get(originId);
         if (origin.next.containsKey(label)) {
             throw new IllegalArgumentException("Edge already defined");
         }
@@ -62,9 +68,9 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
 
     @Override
     public void unlink(int originId, int destId, K label) throws IllegalArgumentException {
-        Moore_NFA_State<K, V> origin = nfaBuild.get(originId);
+        Moore_NFA_Node<K, V> origin = nfaBuild.get(originId);
         if (origin == null) throw new IllegalArgumentException("Invalid originId");
-        Moore_NFA_State<K, V> dest = origin.next.get(label);
+        Moore_NFA_Node<K, V> dest = origin.next.get(label);
         if (dest == null) throw new IllegalArgumentException("Invalid label");
         if (dest.id != destId) throw new IllegalArgumentException("Invalid destId");
         origin.next.remove(label);
@@ -75,7 +81,7 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         if (nfaBuild.containsKey(id)) {
             throw new IllegalArgumentException("ID already defined");
         }
-        nfaBuild.put(id, new Moore_NFA_State<>(id, value));
+        nfaBuild.put(id, new Moore_NFA_Node<>(id, value));
     }
 
     /**
@@ -83,22 +89,41 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
      */
     @Override
     public void remove(int id) throws IllegalArgumentException {
-        Moore_NFA_State<K, V> origin = nfaBuild.remove(id);
+        Moore_NFA_Node<K, V> origin = nfaBuild.remove(id);
         if (origin == null) throw new IllegalArgumentException("Invalid id");
-        for (Moore_NFA_State<K, V> stat : nfaBuild.values()) {
+        for (Moore_NFA_Node<K, V> stat : nfaBuild.values()) {
             stat.next.values().removeIf(node -> node.id == id);
+        }
+    }
+
+    private static class Moore_NFA_Node<K, V> {
+        final int id;
+        final V value;
+        final Map<K, Moore_NFA_Node<K, V>> next;
+
+        private Moore_NFA_Node(int id, V value) {
+            this.id = id;
+            this.value = value;
+            this.next = new HashMap<>();
         }
     }
 
     private static class Moore_NFA_State<K, V> implements State<K, V> {
         final int id;
         final V value;
-        final Map<K, Moore_NFA_State<K, V>> next;
+        final Keychain<K> keys;
 
-        private Moore_NFA_State(int id, V value) {
-            this.id = id;
-            this.value = value;
-            this.next = new HashMap<>();
+        private Moore_NFA_State(Moore_NFA_Node<K, V> node, Moore_NFA_State<K, V> parent, K key) {
+            if (parent == null) throw new IllegalArgumentException("Null parent");
+            this.id = node.id;
+            this.value = node.value;
+            this.keys = Keychain.add(parent.keys, key);
+        }
+
+        private Moore_NFA_State(Moore_NFA_Node<K, V> node) {
+            this.id = node.id;
+            this.value = node.value;
+            this.keys = null;
         }
 
         @Override
@@ -109,6 +134,11 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         @Override
         public int id() {
             return id;
+        }
+
+        @Override
+        public Iterator<K> iterator() {
+            return keys.iterator();
         }
     }
 }

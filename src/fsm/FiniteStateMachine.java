@@ -43,7 +43,7 @@ public interface FiniteStateMachine<K, V> {
      * @param <K> the input type
      * @param <V> the output type
      */
-    interface State<K, V> {
+    interface State<K, V> extends Iterable<K> {
         /**
          * Returns the output value of this state
          * @return the output value of this state
@@ -55,5 +55,12 @@ public interface FiniteStateMachine<K, V> {
          * @return the ID that this state was constructed with
          */
         int id();
+
+        /**
+         * Returns an iterator of the inputs used to reach this state
+         * @return an iterator of the inputs used to reach this state
+         */
+        @Override
+        Iterator<K> iterator();
     }
 }
