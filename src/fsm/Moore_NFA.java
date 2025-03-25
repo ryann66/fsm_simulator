@@ -22,7 +22,7 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     public Set<? extends State<K, V>> step() {
         Set<Moore_NFA_State<K, V>> newStates = new HashSet<>();
         for (Moore_NFA_State<K, V> mnfas : currentStates) {
-            for (Map.Entry<K, Moore_NFA_Node<K, V>> ent : nfaBuild.get(mnfas.id).next.entrySet()) {
+            for (Map.Entry<K, Moore_NFA_Node<K, V>> ent : mnfas.next.entrySet()) {
                 newStates.add(new Moore_NFA_State<>(ent.getValue(), mnfas, ent.getKey()));
             }
         }
@@ -34,7 +34,7 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
     public Set<? extends State<K, V>> step(K input) {
         Set<Moore_NFA_State<K, V>> newStates = new HashSet<>();
         for (Moore_NFA_State<K, V> mnfas : currentStates) {
-            Moore_NFA_Node<K, V> node = nfaBuild.get(mnfas.id).next.get(input);
+            Moore_NFA_Node<K, V> node = mnfas.next.get(input);
             if (node != null) {
                 newStates.add(new Moore_NFA_State<>(node, mnfas, input));
             }
@@ -112,18 +112,21 @@ public class Moore_NFA<K, V> implements MooreFiniteStateMachine<K, V> {
         final int id;
         final V value;
         final Keychain<K> keys;
+        final Map<K, Moore_NFA_Node<K, V>> next;
 
         private Moore_NFA_State(Moore_NFA_Node<K, V> node, Moore_NFA_State<K, V> parent, K key) {
             if (parent == null) throw new IllegalArgumentException("Null parent");
             this.id = node.id;
             this.value = node.value;
             this.keys = Keychain.add(parent.keys, key);
+            this.next = node.next;
         }
 
         private Moore_NFA_State(Moore_NFA_Node<K, V> node) {
             this.id = node.id;
             this.value = node.value;
             this.keys = null;
+            this.next = node.next;
         }
 
         @Override
