@@ -1,4 +1,4 @@
-package fsm;
+package app.fsm;
 
 import java.util.Iterator;
 import java.util.Set;

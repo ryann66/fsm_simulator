@@ -1,6 +1,6 @@
-package fsm;
+package app.fsm;
 
-import keychain.Keychain;
+import app.keychain.Keychain;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package keychain;
+package app.keychain;
 
 import java.util.Iterator;
 import java.util.LinkedList;

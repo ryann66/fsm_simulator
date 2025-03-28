@@ -1,3 +1,5 @@
 module fsm.simulator {
-    requires javafx.graphics;
+    requires javafx.controls;
+
+    exports app;
 }

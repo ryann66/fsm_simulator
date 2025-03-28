@@ -1,4 +1,4 @@
-package fsm;
+package app.fsm;
 
 /**
  * Mealy FSM, output values are tied to edges, not states
