@@ -71,9 +71,6 @@ public class Main extends Application {
         MenuItem itemStepControls = new MenuItem("Step Controls");
         // todo: add button onclick handler
         menuView.getItems().add(itemStepControls);
-        MenuItem itemStateList = new MenuItem("State List");
-        // todo: add button onclick handler
-        menuView.getItems().add(itemStateList);
         MenuItem itemStateHighlighting = new MenuItem("State Highlighting");
         // todo: add button onclick handler
         menuView.getItems().add(itemStateHighlighting);
