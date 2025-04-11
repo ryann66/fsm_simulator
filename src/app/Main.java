@@ -2,14 +2,13 @@ package app;
 
 import app.canvas.Canvas;
 import app.canvas.ComponentTray;
-import app.simluator.StateList;
 import app.simluator.StepControls;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -17,7 +16,7 @@ public class Main extends Application {
     public static final String PROG_NAME = "Finite State Machine Simulator";
 
     private enum SceneElement {
-        MENU_BAR, CONTAINER, CANVAS, COMPONENT_TRAY, STEP_CONTROLS, STATE_LIST
+        MENU_BAR, CANVAS, COMPONENT_TRAY, STEP_CONTROLS
     }
 
     public static void main(String[] args) {
@@ -82,26 +81,20 @@ public class Main extends Application {
 
         Canvas canvas = new Canvas();
         ComponentTray componentTray = new ComponentTray();
-        StateList stateList = new StateList();
         StepControls stepControls = new StepControls();
-        Container container = new Container();
 
         // set position, dimension of top level scenes
-        menuBar.setLayoutX(0);
-        menuBar.setLayoutY(0);
 
 
         // assign nodes to scene
-        StackPane root = new StackPane();
-        root.getChildren().add(menuBar);
-        root.getChildren().add(container);
-        root.getChildren().add(canvas);
-        root.getChildren().add(componentTray);
-        root.getChildren().add(stepControls);
-        root.getChildren().add(stateList);
+        BorderPane root = new BorderPane();
+        root.setTop(menuBar);
+        root.setCenter(canvas);
+        root.setLeft(componentTray);
+        root.setRight(stepControls);
 
         // assign scene to stage
-        stage.setScene(new Scene(root, 300, 250));
+        stage.setScene(new Scene(root, 500, 500));
         stage.setTitle(PROG_NAME);
         stage.show();
     }
