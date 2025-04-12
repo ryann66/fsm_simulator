@@ -76,9 +76,7 @@ public class Main extends Application {
         menuView.getItems().add(itemStateHighlighting);
         MenuBar menuBar = new MenuBar(menuFile, menuEdit, menuView);
 
-        Canvas canvas = new Canvas();
-        ComponentTray componentTray = new ComponentTray();
-        StepControls stepControls = new StepControls();
+        CanvasBuilder builder = new CanvasBuilder();
 
         // set position, dimension of top level scenes
 
@@ -86,9 +84,9 @@ public class Main extends Application {
         // assign nodes to scene
         BorderPane root = new BorderPane();
         root.setTop(menuBar);
-        root.setCenter(canvas);
-        root.setLeft(componentTray);
-        root.setRight(stepControls);
+        root.setCenter(builder.getCanvas());
+        root.setLeft(builder.getComponentTray());
+        root.setRight(builder.getStepControls());
 
         // assign scene to stage
         stage.setScene(new Scene(root, 500, 500));
