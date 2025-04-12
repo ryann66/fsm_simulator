@@ -1,6 +1,6 @@
 package app.simluator;
 
-import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 
-public class StepControls extends Group {
+public class StepControls extends Pane {
 }
