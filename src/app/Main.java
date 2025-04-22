@@ -1,8 +1,5 @@
 package app;
 
-import app.canvas.Canvas;
-import app.canvas.ComponentTray;
-import app.simluator.StepControls;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Menu;
@@ -85,7 +82,6 @@ public class Main extends Application {
         BorderPane root = new BorderPane();
         root.setTop(menuBar);
         root.setCenter(builder.getCanvas());
-        root.setLeft(builder.getComponentTray());
         root.setRight(builder.getStepControls());
 
         // assign scene to stage

@@ -1,7 +1,6 @@
 package app;
 
 import app.canvas.Canvas;
-import app.canvas.ComponentTray;
 import app.fsm.FiniteStateMachine;
 import app.simluator.StepControls;
 
